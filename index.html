@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reward Task Center</title>
+<script src='//libtl.com/sdk.js' data-zone='11347992' data-sdk='show_11347992'></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
+body{background:#120021;color:white;min-height:100vh;padding-bottom:90px;}
+.container{max-width:470px;margin:auto;padding:16px;}
+.header{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.userimg{width:44px;height:44px;border-radius:50%;border:2px solid #ff4de6;}
+.user-name{font-size:16px;font-weight:700;}
+.card{background:#ffffff12;padding:18px;border-radius:16px;margin-bottom:16px;}
+.balance-box{text-align:center;}
+.balance-amount{font-size:36px;margin:10px 0;color:#ff9cf5;font-weight:700;}
+.button{width:100%;padding:13px;border-radius:10px;border:none;margin-top:10px;font-size:14px;cursor:pointer;}
+.primary-btn{background:linear-gradient(90deg,#ff4de6,#a84dff);color:white;}
+.secondary-btn{background:#ffffff18;color:white;border:1px solid #ffffff25;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.box{background:#ffffff14;padding:12px;border-radius:12px;text-align:center;}
+.box h2{margin-top:5px;font-size:20px;}
+.progress-text{margin-bottom:6px;font-size:14px;}
+.progress-wrap{background:#ffffff25;height:10px;border-radius:20px;overflow:hidden;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#ff4de6,#ffb347);}
+.input{width:100%;padding:12px;border-radius:8px;border:none;margin-top:8px;}
+select.input{background:white;color:black;}
+.navbar{position:fixed;bottom:0;width:100%;max-width:470px;left:50%;transform:translateX(-50%);display:flex;background:#120021;border-top:1px solid #ffffff10;}
+.nav{flex:1;text-align:center;padding:12px;font-size:13px;cursor:pointer;color:#bbb;}
+.nav.active{color:#ff4de6;font-weight:700;}
+.page{display:none;}
+.page.active{display:block;}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+<img class="userimg" src="https://via.placeholder.com/44">
+<div><div class="user-name">User</div><small>Dashboard</small></div>
+</div>
+
+<!-- HOME -->
+<div id="home" class="page active">
+<div class="card balance-box">
+<h3>Your Balance</h3>
+<div id="balance" class="balance-amount">BDT 0.00</div>
+<button class="button primary-btn" onclick="openPage('earn')">Start Earning</button>
+<button class="button secondary-btn" onclick="openPage('withdraw')">Withdraw Money</button>
+</div>
+<div class="grid">
+<div class="box">Ads Viewed<h2 id="ads">0</h2></div>
+<div class="box">Total Earn<h2 id="earned">0</h2></div>
+</div>
+</div>
+
+<!-- EARN -->
+<div id="earn" class="page">
+<div class="card">
+<h3>Complete Ads</h3>
+<div class="progress-text" id="progressText">0 / 30 completed</div>
+<div class="progress-wrap"><div id="progressBar" class="progress-fill"></div></div>
+<button id="watchBtn" class="button primary-btn">Watch Advertisement +0.50 ৳</button>
+</div>
+</div>
+
+<!-- WITHDRAW -->
+<div id="withdraw" class="page">
+<div class="card">
+<h3>Withdraw Funds</h3>
+<p>Minimum withdraw: BDT 150</p>
+<select id="method" class="input"><option value="bkash">bKash</option><option value="nagad">Nagad</option></select>
+<input id="account" class="input" placeholder="Account number">
+<input id="amount" class="input" type="number" placeholder="Withdraw amount">
+<button id="withdrawBtn" class="button primary-btn">Send Request</button>
+</div>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="page">
+<div class="card">
+<h3>User Stats</h3>
+<p>Total Ads Watched: <span id="p_ads">0</span></p>
+<p>Total Earnings: <span id="p_earn">0</span></p>
+</div>
+</div>
+
+</div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+<div class="nav active" onclick="openPage('home',this)">Home</div>
+<div class="nav" onclick="openPage('earn',this)">Earn</div>
+<div class="nav" onclick="openPage('withdraw',this)">Withdraw</div>
+<div class="nav" onclick="openPage('profile',this)">Profile</div>
+</div>
+
+<!-- Monetag SDK -->
+<script src='//libtl.com/sdk.js' data-zone='11347992' data-sdk='show_11347992'></script>
+
+<script>
+const DAILY_LIMIT = 30
+const REWARD = 0.50
+const MIN_WITHDRAW = 150
+
+if(!localStorage.balance){ localStorage.balance = 0; localStorage.ads = 0; }
+
+function update(){
+let balance = parseFloat(localStorage.balance)
+let ads = parseInt(localStorage.ads)
+document.getElementById("balance").innerText = "BDT "+balance.toFixed(2)
+document.getElementById("earned").innerText = balance.toFixed(2)
+document.getElementById("ads").innerText = ads
+document.getElementById("p_ads").innerText = ads
+document.getElementById("p_earn").innerText = balance.toFixed(2)
+document.getElementById("progressText").innerText = ads+" / "+DAILY_LIMIT+" completed"
+document.getElementById("progressBar").style.width = (ads/DAILY_LIMIT*100)+"%"
+}
+
+function openPage(id,btn){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+document.getElementById(id).classList.add("active")
+document.querySelectorAll(".nav").forEach(n=>n.classList.remove("active"))
+if(btn) btn.classList.add("active")
+}
+
+document.getElementById("watchBtn").onclick = function(){
+let ads = parseInt(localStorage.ads)
+if(ads>=DAILY_LIMIT){ alert("Daily limit reached"); return }
+if(typeof show_11347992 === "function"){
+show_11347992().then(()=>{
+ads++
+let balance = parseFloat(localStorage.balance)+REWARD
+localStorage.ads=ads
+localStorage.balance=balance
+alert("You earned "+REWARD+" BDT")
+update()
+}).catch(()=>{ alert("Ad not loaded") })
+}else{
+ads++
+let balance = parseFloat(localStorage.balance)+REWARD
+localStorage.ads=ads
+localStorage.balance=balance
+update()
+}
+}
+
+document.getElementById("withdrawBtn").onclick = function(){
+let amount=parseFloat(document.getElementById("amount").value)
+if(amount<MIN_WITHDRAW){ alert("Minimum withdraw "+MIN_WITHDRAW); return }
+let balance=parseFloat(localStorage.balance)
+if(amount>balance){ alert("Not enough balance"); return }
+localStorage.balance=balance-amount
+alert("Withdraw request sent")
+update()
+}
+
+update()
+</script>
+</body>
+</html>
